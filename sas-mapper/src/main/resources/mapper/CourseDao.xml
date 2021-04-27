@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingnan.sas.mapper.CourseDao">
+
+    <resultMap type="com.lingnan.sas.core.entity.Course" id="CourseMap">
+        <result property="cid" column="cid" jdbcType="INTEGER"/>
+        <result property="cname" column="cname" jdbcType="VARCHAR"/>
+        <result property="cstate" column="cstate" jdbcType="INTEGER"/>
+        <result property="cselcount" column="cselcount" jdbcType="INTEGER"/>
+        <result property="ctid" column="ctid" jdbcType="INTEGER"/>
+        <result property="mid" column="mid" jdbcType="INTEGER"/>
+        <result property="isDel" column="is_del" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="CourseMap">
+        select
+          cid, cname, ccredit, cperiod, cstate, cselcount, cmaxcount, studytype, ctid, mid, is_del
+        from school_assistant.course
+        where cid = #{cid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="CourseMap">
+        select
+          cid, cname, ccredit, cperiod, cstate, cselcount, cmaxcount, studytype, ctid, mid, is_del
+        from school_assistant.course
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="CourseMap">
+        select
+          cid, cname, ccredit, cperiod, cstate, cselcount, cmaxcount, studytype, ctid, mid, is_del
+        from school_assistant.course
+        <where>
+            <if test="cid != null">
+                and cid = #{cid}
+            </if>
+            <if test="cname != null and cname != ''">
+                and cname = #{cname}
+            </if>
+            <if test="cstate != null">
+                and cstate = #{cstate}
+            </if>
+            <if test="cselcount != null">
+                and cselcount = #{cselcount}
+            </if>
+            <if test="ctid != null">
+                and ctid = #{ctid}
+            </if>
+            <if test="mid != null">
+                and mid = #{mid}
+            </if>
+            <if test="isDel != null">
+                and is_del = #{isDel}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="cid" useGeneratedKeys="true">
+        insert into school_assistant.course(cname, ccredit, cperiod, cstate, cselcount, cmaxcount, studytype, ctid, mid, is_del)
+        values (#{cname}, #{cstate}, #{cselcount}, #{ctid}, #{mid}, #{isDel})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update school_assistant.course
+        <set>
+            <if test="cname != null and cname != ''">
+                cname = #{cname},
+            </if>
+            <if test="cstate != null">
+                cstate = #{cstate},
+            </if>
+            <if test="cselcount != null">
+                cselcount = #{cselcount},
+            </if>
+            <if test="ctid != null">
+                ctid = #{ctid},
+            </if>
+            <if test="mid != null">
+                mid = #{mid},
+            </if>
+            <if test="isDel != null">
+                is_del = #{isDel},
+            </if>
+        </set>
+        where cid = #{cid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from school_assistant.course where cid = #{cid}
+    </delete>
+
+</mapper>

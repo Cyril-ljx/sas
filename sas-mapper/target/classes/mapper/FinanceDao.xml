@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingnan.sas.mapper.FinanceDao">
+
+    <resultMap type="com.lingnan.sas.core.entity.Finance" id="FinanceMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="classid" column="classid" jdbcType="INTEGER"/>
+        <result property="use" column="use" jdbcType="VARCHAR"/>
+        <result property="pay" column="pay" jdbcType="NUMERIC"/>
+        <result property="income" column="income" jdbcType="NUMERIC"/>
+        <result property="count" column="count" jdbcType="NUMERIC"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="FinanceMap">
+        select
+          id, classid, use, pay, income, count
+        from school_assistant.finance
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="FinanceMap">
+        select
+          id, classid, use, pay, income, count
+        from school_assistant.finance
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="FinanceMap">
+        select
+          id, classid, use, pay, income, count
+        from school_assistant.finance
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="classid != null">
+                and classid = #{classid}
+            </if>
+            <if test="use != null and use != ''">
+                and use = #{use}
+            </if>
+            <if test="pay != null">
+                and pay = #{pay}
+            </if>
+            <if test="income != null">
+                and income = #{income}
+            </if>
+            <if test="count != null">
+                and count = #{count}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into school_assistant.finance(classid, use, pay, income, count)
+        values (#{classid}, #{use}, #{pay}, #{income}, #{count})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update school_assistant.finance
+        <set>
+            <if test="classid != null">
+                classid = #{classid},
+            </if>
+            <if test="use != null and use != ''">
+                use = #{use},
+            </if>
+            <if test="pay != null">
+                pay = #{pay},
+            </if>
+            <if test="income != null">
+                income = #{income},
+            </if>
+            <if test="count != null">
+                count = #{count},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from school_assistant.finance where id = #{id}
+    </delete>
+
+</mapper>

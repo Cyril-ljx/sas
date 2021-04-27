@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页 - 校园助手管理系统</title>
+    <!--: include("import.html"){} -->
+    <style>
+        iframe {
+            border-width: 0px;
+        }
+
+        .layui-show {
+            height: 100%;
+        }
+
+        .layui-table-view {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">校园助手管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="/static/imgs/004.jpg" class="layui-nav-img">
+                    ${sysUser.nickName!}
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="javascript:;" id="info">重置密码</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a class="logout" href="#">注销</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="left">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;"><i class="layui-icon">&#xe716;</i> 系统管理</a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/manager/index" lay-id="manager">系统用户管理</a>
+                        </dd>
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/loginLog/index" lay-id="loginLog">登录日志</a>
+                        </dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;"><i class="layui-icon">&#xe656;</i>组织架构</a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/class/index"
+                               lay-id="department">班级管理</a>
+                        </dd>
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/grade/index" lay-id="grade">年级管理</a>
+                        </dd>
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/major/index" lay-id="major">专业管理</a>
+                        </dd>
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/department/index" lay-id="depament">院系管理</a>
+                        </dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;"><i class="layui-icon">&#xe770;</i>学生管理</a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/student/index" lay-id="studentInfo">学生信息管理</a>
+                        </dd>
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/student/add"
+                               lay-id="studentInput">录入学生</a>
+                        </dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;"><i class="layui-icon">&#xe612;</i>教师管理</a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/teacher/index"
+                               lay-id="teacher_info">教师基本信息管理</a>
+                        </dd>
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/teacher/add" lay-id="teacherInput">录入教师</a>
+                        </dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;"><i class="layui-icon">&#xe645;</i>公告管理</a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/systemNotice/index" lay-id="systemNotice">系统公告</a>
+                        </dd>
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/systemNotice/add" lay-id="notice">发布系统公告</a>
+                        </dd>
+                    </dl>
+                </li>
+
+                <li class="layui-nav-item">
+                    <a href="javascript:;"><i class="layui-icon">&#xe63c;</i>任务统计</a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/clock/index" lay-id="clock">打卡记录</a>
+                        </dd>
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/direction/index" lay-id="diretion">假期去向记录</a>
+                        </dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;"><i class="layui-icon">&#xe655;</i>共享区管理</a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="javascript:;" lay-url="/sas/admin/page/share/index" lay-id="share">上传记录</a>
+                        </dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 5px 0px 5px 5px;height: 100%;">
+            <div class="layui-tab" lay-allowClose="true" lay-filter="modules" style="height: 100%;">
+                <ul class="layui-tab-title">
+                </ul>
+                <div class="layui-tab-content" style="height: 100%;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © sas.lingnan.com - 底部固定区域
+    </div>
+</div>
+
+</body>
+<script>
+
+    layui.use(['element', 'jquery', 'layer'], function () {
+        var element = layui.element;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var tab_filter = "modules";
+
+        $(".logout").click(function () {
+            layer.confirm("是否退出登录?", {"icon": 3}, function () {
+                window.location.href = "/sas/admin/logout";
+            })
+        })
+        $("#info").click(function () {
+            layer.open({
+                type: 2,
+                title: "重置密码",
+                shadeClose: true,
+                shade: 0.2,
+                maxmin: true, //开启最大化最小化按钮
+                area: ['40%', '75%'],
+                content: "/sas/admin/page/reset",
+                end: function () {
+                    window.location.reload();
+                }
+            });
+        });
+
+        //监听左侧导航的点击事件
+        element.on('nav(left)', function (data) {
+            var url = data.attr("lay-url");
+
+            //无视
+            if (url === undefined) {
+                return;
+            }
+
+            var ele = {};
+            ele.title = data.html();
+            ele.id = data.attr("lay-id");
+            ele.content = "<iframe src='" + url + "' style='width: 100%;height: 100%;'></iframe>";
+            if (array.get(ele.id) === -1) {
+                tab.add(ele);
+                tab.change(ele);
+            } else {
+                tab.change(ele)
+            }
+        });
+
+        /**
+         * 监听标签页删除：同时删除数组记录
+         * */
+        element.on('tabDelete(' + tab_filter + ')', function (data) {
+            var index = data.index;
+            array.tabs.splice(index, 1);
+        });
+
+        /**
+         * 用以保存标签记录的对象
+         * */
+        var array = {
+            tabs: [],
+            add: function (tab) {
+                this.tabs.push(tab)
+            },
+            get: function (id) {
+                for (var i = 0; i < this.tabs.length; i++) {
+                    var tab = this.tabs[i];
+                    if (tab.id === id) {
+                        return i;
+                    }
+                }
+                return -1;
+            },
+            del: function (id) {
+                var index = this.get(id);
+                this.tabs.splice(index, 1);
+            }
+        };
+
+        /**
+         * 标签事件
+         * */
+        var tab = {
+            add: function (ele) {
+                //添加并且切换
+                element.tabAdd(tab_filter, {
+                    title: ele.title,
+                    content: ele.content,
+                    id: ele.id //实际使用一般是规定好的id，这里以时间戳模拟下
+                });
+                array.add(ele)
+            },
+            del: function (ele) {
+                element.tabDelete(tab_filter, ele.id);
+                array.del(ele)
+            },
+            change: function (ele) {
+                element.tabChange(tab_filter, ele.id);
+            }
+        };
+
+        $(document).ready(function () {
+            let initTab = {};
+            let url = "/sas/admin/page/loginLog/index";
+            initTab.id = "loginLog";
+            initTab.title = "登录日志";
+            initTab.content = "<iframe src='" + url + "' style='width: 100%;height: 100%;'></iframe>";
+            tab.add(initTab);
+            tab.change(initTab);
+        })
+
+    });
+</script>
+</html>

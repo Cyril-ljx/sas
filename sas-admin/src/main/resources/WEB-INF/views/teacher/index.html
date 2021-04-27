@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>教师管理 - 校园助手管理系统</title>
+    <!--: include("/import.html"){} -->
+</head>
+<body>
+<blockquote class="layui-elem-quote  layui-quote-nm layui-form">
+    <div class="layui-inline">
+        <div class="layui-input-inline">
+            <input type="text" id="tname" placeholder="请输入老师姓名" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-input-inline">
+            <input type="text" id="tid" placeholder="请输入老师编号" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-normal" id="search"><i class="layui-icon">&#xe615;</i>搜索</button>
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-primary" id="rest"><i class="layui-icon">&#xe669;</i>重置</button>
+        </div>
+    </div>
+</blockquote>
+<table class="layui-hide" id="table" lay-filter="table"></table>
+
+<script type="text/html" id="outerBar">
+    <a class="layui-btn layui-btn-sm layui-btn-primary" lay-event="detail">详情</a>
+    <a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
+</script>
+</body>
+</body>
+<script>
+    layui.use(['form','table', 'jquery'], function () {
+        var form = layui.form;
+        var table = layui.table;
+        var $ = layui.jquery;
+        /* 表格数据载入 */
+        table.render({
+            elem: '#table',
+            url: '/sas/admin/teacher/teacherList',
+            toolbar: '#outerBar',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示'
+                , layEvent: 'LAYTABLE_TIPS'
+                , icon: 'layui-icon-tips'
+            }],
+            skin: "row",
+            width: 1120,
+            height: 450,
+            page: true,
+            cols: [
+                [{type: 'radio', fixed: 'left'}, {
+                    field: 'tid',
+                    title: 'ID',
+                    width: 100,
+                    sort: true,
+                    fixed: 'left'
+                }, {
+                    field: 'tname',
+                    title: '名字',
+                    width: 80
+                }, {
+                    field: 'tgender',
+                    title: '性别',
+                    width: 60
+                }, {
+                    field: 'gname',
+                    title: '年级',
+                    width: 100
+                },
+                    {
+                        field: 'pname',
+                        title: '政治面貌',
+                        width: 100
+                    },
+                    {
+                        field: 'tnation',
+                        title: '民族',
+                        width: 100
+                    },
+                    {
+                        field: 'tcardid',
+                        title: '身份证',
+                        width: 100
+                    },{
+                    field: 'tphone',
+                    title: '电话号码',
+                    width: 120
+                }, {
+                    field: 'taddress',
+                    title: '地址',
+                    width: 160
+                } ,{
+                    field: 'entertime',
+                    title: '进入时间',
+                    width: 160,
+                    fixed: 'right'
+                } ,
+                ]
+            ],
+            id: 'Reload' //表格重载的id
+        });
+        $("#rest").click(function () {
+            $("#tname").val("");
+            $("#tid").val("");
+        });
+
+        /* 表格重载 */
+        $('#search').on('click', function () {
+            table.reload('Reload', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                },
+                where: {
+                    tname: $('#tname').val(),
+                    tid: $('#tid').val(),
+                }
+            });
+        });
+        $(document).ready(function () {
+            $.ajax({
+                url: "/sas/admin/grade/allGrade",
+                type: 'post',
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.succeed) {
+                        var types = data.data;
+                        $("#sel").val(data.gname);
+                        form.render('select');
+                        console.log(types);
+                        for (let i = 0; i < types.length; i++) {
+                            let col = types[i];
+                            $("#gid").append(
+                                $("<option>").attr("value", col.gid).html(col.gname)
+                            )
+                        }
+                        form.render('select');
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                }
+            });
+        });
+        //头工具栏事件
+        table.on('toolbar(table)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var data = checkStatus.data[0];
+            if (obj.event !== 'add' && checkStatus.data.length === 0) {
+                layer.msg("至少选择一条数据进行操作!", {"icon": 3});
+                return;
+            }
+            switch (obj.event) {
+                case 'detail':
+                    layer.open({
+                        type: 2,
+                        title: "教师信息详情",
+                        shadeClose: true,
+                        shade: 0.2,
+                        maxmin: true, //开启最大化最小化按钮
+                        area: ['50%', '75%'],
+                        content: "/sas/admin/page/teacher/detail?tid=" + data.tid,
+                        end: function () {
+                            $(".layui-laypage-btn").click();
+                        }
+                    });
+                    break;
+                case 'edit':
+                    layer.open({
+                        type: 2,
+                        title: "修改教师信息",
+                        shadeClose: true,
+                        shade: 0.2,
+                        maxmin: true, //开启最大化最小化按钮
+                        area: ['50%', '75%'],
+                        content: "/sas/admin/page/teacher/edit?tid=" + data.tid,
+                        end: function () {
+                            $(".layui-laypage-btn").click();
+                        }
+                    });
+                    break;
+                case 'del':
+                    layer.confirm("确认删除该记录?", ['确认', '取消'], function () {
+                        $.ajax({
+                            url: "/sas/admin/teacher/del",
+                            type: 'post',
+                            data: JSON.stringify({"tid": data.tid}),
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                if (data.succeed) {
+                                    layer.msg("删除成功!");
+                                    $(".layui-laypage-btn").click();
+                                } else {
+                                    layer.alert(data.msg);
+                                }
+                            }
+                        });
+                    });
+                    break;
+                //自定义头工具栏右侧图标 - 提示
+                case 'LAYTABLE_TIPS':
+                    layer.msg('这是工具栏右侧自定义的一个图标按钮');
+                    break;
+            }
+        });
+
+    });
+</script>
+</html>

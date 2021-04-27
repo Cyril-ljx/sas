@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingnan.sas.mapper.SysUserDao">
+    <resultMap type="com.lingnan.sas.core.entity.SysUser" id="SysUserMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="loginName" column="login_name" jdbcType="VARCHAR"/>
+        <result property="nickName" column="nick_name" jdbcType="VARCHAR"/>
+        <result property="icon" column="icon" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="salt" column="salt" jdbcType="VARCHAR"/>
+        <result property="tel" column="tel" jdbcType="VARCHAR"/>
+        <result property="email" column="email" jdbcType="VARCHAR"/>
+        <result property="locked" column="locked" jdbcType="TINYINT"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
+        <result property="createBy" column="create_by" jdbcType="TIMESTAMP"/>
+        <result property="updateBy" column="update_by" jdbcType="TIMESTAMP"/>
+        <result property="remarks" column="remarks" jdbcType="VARCHAR"/>
+        <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+        <result property="openId" column="open_id" jdbcType="VARCHAR"/>
+    </resultMap>
+    <!--查询单个-->
+    <select id="queryById" resultMap="SysUserMap">
+        select
+          id, login_name, nick_name, icon, password, salt, tel, email, locked, create_date, create_by, update_date, update_by, remarks, is_admin, role_id,open_id
+        from school_assistant.sys_user
+        where id = #{id} limit 1
+    </select>
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="SysUserMap">
+        select
+          id, login_name, nick_name, icon, password, salt, tel, email, locked, create_date, create_by, update_date, update_by, remarks,  is_admin, role_id,open_id
+        from school_assistant.sys_user
+        limit #{offset}, #{limit}
+    </select>
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="SysUserMap">
+        select
+          id, login_name, nick_name, icon, password, salt, tel, email, locked, create_date, create_by, update_date, update_by, remarks, is_admin, role_id
+        from school_assistant.sys_user
+        <where>
+            <if test="id != null and id != ''">
+                and id = #{id}
+            </if>
+            <if test="loginName != null and loginName != ''">
+                and login_name = #{loginName}
+            </if>
+            <if test="nickName != null and nickName != ''">
+                and nick_name = #{nickName}
+            </if>
+            <if test="icon != null and icon != ''">
+                and icon = #{icon}
+            </if>
+            <if test="password != null and password != ''">
+                and password = #{password}
+            </if>
+            <if test="salt != null and salt != ''">
+                and salt = #{salt}
+            </if>
+            <if test="tel != null and tel != ''">
+                and tel = #{tel}
+            </if>
+            <if test="email != null and email != ''">
+                and email = #{email}
+            </if>
+            <if test="locked != null">
+                and locked = #{locked}
+            </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+            <if test="updateDate != null">
+                and update_date = #{updateDate}
+            </if>
+            <if test="remarks != null and remarks != ''">
+
+                and remarks = #{remarks}
+            </if>
+            <if test="roleId != null">
+
+                and role_id = #{roleId}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into school_assistant.sys_user(login_name, nick_name, icon, password, salt, tel, email, locked, create_date,  update_by, remarks,  role_id,open_id)
+        values (#{loginName}, #{nickName}, #{icon}, #{password}, #{salt}, #{tel}, #{email}, #{locked}, #{createDate},  #{updateDate},  #{remarks},  #{roleId},#{openId})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update school_assistant.sys_user
+        <set>
+            <if test="loginName != null and loginName != ''">
+                login_name = #{loginName},
+            </if>
+            <if test="nickName != null and nickName != ''">
+                nick_name = #{nickName},
+            </if>
+            <if test="icon != null and icon != ''">
+                icon = #{icon},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password},
+            </if>
+            <if test="salt != null and salt != ''">
+                salt = #{salt},
+            </if>
+            <if test="tel != null and tel != ''">
+                tel = #{tel},
+            </if>
+            <if test="email != null and email != ''">
+                email = #{email},
+            </if>
+            <if test="locked != null">
+                locked = #{locked},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="remarks != null and remarks != ''">
+                remarks = #{remarks},
+            </if>
+            <if test="roleId != null">
+                role_id = #{roleId},
+            </if>
+               <if test="openId != null">
+                open_id = #{openId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from school_assistant.sys_user where id = #{id}
+    </delete>
+    <select id="getRole" resultType="java.lang.String">
+    select sr.role from sys_user su left join sys_role sr on su.role_id = sr.id
+        <where>
+            <if test="loginName != null and loginName != ''">
+                login_name=#{loginName}
+            </if>
+        </where>
+    </select>
+    <select id="findUserByLoginName" resultMap="SysUserMap">
+select * from sys_user
+        <where>
+            <if test="username != null and username != ''">
+                login_name=#{username}
+            </if>
+            and locked = 0
+        </where>
+       limit 1
+    </select>
+    <select id="queryAdminList" resultMap="SysUserMap">
+select * from sys_user where id != #{sid}  limit #{offset}, #{limit}
+    </select>
+    <select id="queryAdminCount" resultType="java.lang.Integer">
+ select count(*)
+        from sys_user m
+        where id != #{id}
+    </select>
+    <select id="queryByUserName" resultMap="SysUserMap">
+select su.* from sys_user su
+    left join sys_role sr on
+    su.role_id = sr.id
+where su.login_name = #{username}
+    </select>
+    <select id="searchId" resultType="java.lang.Integer">
+select id from sys_user where login_name = #{account} and password = #{pwd} and locked = 0
+    </select>
+    <update id="updateWx">
+     update school_assistant.sys_user
+        <set>
+            <if test="nickName != null and nickName != ''">
+                nick_name = #{nickName},
+            </if>
+            <if test="icon != null and icon != ''">
+                icon = #{icon},
+            </if>
+            <if test="tel != null and tel != ''">
+                tel = #{tel},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate},
+            </if>
+               <if test="openId != null">
+                open_id = #{openId},
+            </if>
+        </set>
+
+        where id = #{id}
+</update>
+
+    <select id="searchUserSummary"  resultType="HashMap">
+  SELECT
+	s.sname,
+	u.icon,
+	c.classname AS classname,
+	t.tname,
+	g.gname
+FROM
+	sys_user u
+	LEFT JOIN student s on u.login_name = CAST(s.sid as char)
+	LEFT JOIN classinfo c on c.classid = s.classid
+	LEFT JOIN teacher t on u.login_name = CAST(t.tid as char)
+	LEFT JOIN grade g on g.gid = t.gid
+WHERE
+	u.login_name = #{loginName} AND u.locked	= 0
+</select>
+
+ <!--通过实体作为筛选条件查询-->
+    <select id="queryId" resultMap="SysUserMap">
+       SELECT DISTINCT
+	su.id
+FROM
+	sys_user su
+	LEFT JOIN student s ON su.login_name = s.sid
+	LEFT JOIN classinfo c ON c.classid = s.classid
+	LEFT JOIN grade g ON g.gid = c.gid
+	LEFT JOIN teacher t ON g.gid = t.gid
+WHERE
+	tid = #{tid}
+	AND su.role_id = 2
+    </select>
+</mapper>

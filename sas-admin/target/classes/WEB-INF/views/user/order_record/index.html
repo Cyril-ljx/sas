@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户订房记录管理 - 酒店管理系统</title>
+    <!--: include("/import.html"){} -->
+</head>
+<body>
+<blockquote class="layui-elem-quote  layui-quote-nm layui-form">
+    <div class="layui-inline">
+        <div class="layui-input-inline">
+            <input type="text" id="nickname" placeholder="请输入用户姓名" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-input-inline">
+            <input type="text" id="room" placeholder="请输入房间号" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-normal" id="search"><i class="layui-icon">&#xe615;</i>搜索</button>
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-primary" id="rest"><i class="layui-icon">&#xe669;</i>重置</button>
+        </div>
+    </div>
+</blockquote>
+<table class="layui-hide" id="table" lay-filter="table"></table>
+
+<script type="text/html" id="outerBar">
+    <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
+</script>
+</body>
+<script>
+    layui.use(['table', 'jquery', "form"], function () {
+        const table = layui.table;
+        const form = layui.form;
+        const $ = layui.jquery;
+        /* 表格数据载入 */
+        table.render({
+            elem: '#table',
+            url: '/hms/admin/record/reserveList',
+            toolbar: '#outerBar',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示'
+                , layEvent: 'LAYTABLE_TIPS'
+                , icon: 'layui-icon-tips'
+            }],
+            skin: "row",
+            width: 1120,
+            height: 450,
+            page: true,
+            cols: [
+                [{type: 'radio', fixed: 'left'}, {
+                    field: 'id',
+                    title: 'ID',
+                    width: 160,
+                    sort: true,
+                    fixed: 'left'
+                }, {
+                    field: 'nickname',
+                    title: '订房客户',
+                    width: 240
+                }, {
+                    field: "roomNum",
+                    title: '房间号',
+                    width: 300
+                }, {
+                    field: 'createTime',
+                    title: '订房时间',
+                    sort: true,
+                    width: 240
+                }, {
+                    field: 'flag',
+                    title: '是否入住',
+                    width: 160,
+                    fixed: 'right',
+                    sort: true,
+                    templet: function (d) {
+                        return d.flag === 0 ? "取消订房" : "已入住";
+                    }
+                }
+                ]
+            ],
+            id: 'Reload' //表格重载的id
+        });
+
+        $("#rest").click(function () {
+            $("#nickname").val("");
+            $("#room").val("");
+            form.render("select");
+        })
+
+        /* 表格重载 */
+        $('#search').on('click', function () {
+            table.reload('Reload', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                },
+                where: {
+                    nickname: $('#nickname').val(),
+                    room: $('#room').val()
+                }
+            });
+        });
+
+        //头工具栏事件
+        table.on('toolbar(table)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var data = checkStatus.data[0];
+            if (obj.event !== 'add' && checkStatus.data.length === 0) {
+                layer.msg("至少选择一条数据进行操作!", {"icon": 3});
+                return;
+            }
+            switch (obj.event) {
+                case 'del':
+                    layer.confirm("确认删除该记录?", ['确认', '取消'], function () {
+                        $.ajax({
+                            url: "/hms/admin/record/reserve/del",
+                            type: 'post',
+                            data: JSON.stringify({"id": data.id}),
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                if (data.succeed) {
+                                    layer.msg("删除成功!");
+                                    $(".layui-laypage-btn").click();
+                                } else {
+                                    layer.alert(data.msg);
+                                }
+                            }
+                        });
+                    });
+                    break;
+                //自定义头工具栏右侧图标 - 提示
+                case 'LAYTABLE_TIPS':
+                    layer.msg('这是工具栏右侧自定义的一个图标按钮');
+                    break;
+            }
+        });
+
+    });
+</script>
+</html>

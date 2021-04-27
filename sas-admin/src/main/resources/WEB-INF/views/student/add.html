@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>学生信息添加 - 校园助手管理系统</title>
+    <!--: include("/import.html"){} -->
+    <style>
+        img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .img {
+            width: 75px;
+            height: 75px;
+            margin: 10px 20px 0px 0px
+        }
+    </style>
+</head>
+<body>
+<div class="layui-container">
+    <div class="layui-row layui-col-space5">
+        <div class="grid-demo">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+                <legend>学生基本信息</legend>
+            </fieldset>
+            <form class="layui-form layui-form-pane" action="" lay-filter="form">
+                <input type="hidden" name="leavetime">
+                <input type="hidden" name="stustate">
+                <input type="hidden" name="isDel">
+                <input type="hidden" name="mim">
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">学号</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="stuid" lay-verify="stuid" placeholder="请输入" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">学生名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="sname" lay-verify="sname" placeholder="请输入" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">性别</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="sgender" value="男" title="男" checked="">
+                        <input type="radio" name="sgender" value="女" title="女">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">生日</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" lay-verify="required" name="sbirthday" id="sbirthday">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">入学时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" lay-verify="required" name="entertime" id="entertime" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">身份证</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="scardid" lay-verify="scardid" placeholder="请输入" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">电话</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="sphone" lay-verify="sphone" placeholder="请输入" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">政治面貌</label>
+                    <div class="layui-input-block">
+                        <select id="pid" name="pid" lay-verify="required" lay-filter="state">
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">民族</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="snation" lay-verify="snation" placeholder="请输入" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">家庭地址</label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="请输入家庭地址" name="saddress" lay-verify="required" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <fieldset class="layui-elem-field layui-field-title">
+                    <legend>学生入班信息</legend>
+                </fieldset>
+                <div class="layui-col-xs12">
+                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md3">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">选择系部</label>
+                            <div class="layui-input-block">
+                                <select name="did" lay-search="" lay-verify="required" id="required1"
+                                        lay-filter="required1">
+                                    <option value="0">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md3">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">选择专业</label>
+                            <div class="layui-input-block">
+                                <select name="mid" lay-search="" lay-verify="required" id="required2"
+                                        lay-filter="required2">
+                                    <option value="">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md3">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">选择年级</label>
+                            <div class="layui-input-block">
+                                <select name="gid" lay-search="" lay-verify="required" id="required3"
+                                        lay-filter="required3">
+                                    <option value="0">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs12 layui-col-sm6 layui-col-md3">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">选择班级</label>
+                            <div class="layui-input-block">
+                                <select name="classid" lay-search="" lay-verify="required" id="required4"
+                                        lay-filter="required4">
+                                    <option value="0">请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="width: 350px;float: right;margin: 20px 5px;">
+                        <button type="button" class="layui-btn" lay-filter="form" id="form" lay-submit>立即提交</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    layui.use(['form', 'layer', 'jquery', 'laydate'], function () {
+        var form = layui.form
+            , layer = layui.layer
+            , $ = layui.jquery
+            , laydate = layui.laydate;
+        laydate.render({
+            elem: '#entertime'
+        });
+        laydate.render({
+            elem: '#sbirthday'
+        });
+        $(document).ready(function () {
+            $.ajax({
+                url: "/sas/admin/classInfo/allClass",
+                type: 'post',
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.succeed) {
+
+                        var types = data.data;
+                        console.log(types);
+                        for (let i = 0; i < types.length; i++) {
+                            let col = types[i];
+                            $("#cid").append(
+                                $("<option>").attr("value", col.cid).html(col.classname)
+                            )
+                        }
+                        form.render('select');
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                }
+            });
+            $.ajax({
+                url: "/sas/admin/politics/allPolitics",
+                type: 'post',
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.succeed) {
+                        var types = data.data;
+                        $("#sel").val(data.pname);
+                        form.render('select');
+                        console.log(types);
+                        for (let i = 0; i < types.length; i++) {
+                            let col = types[i];
+                            $("#pid").append(
+                                $("<option>").attr("value", col.pid).html(col.pname)
+                            )
+                        }
+                        form.render('select');
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                }
+            });
+        })
+
+        if (1 == 1) {
+            layui.$.ajax({
+                type: 'post',
+                url: "/sas/admin/student/selDepartment",
+                dataType: 'json',
+                success: function (result) {
+                    var data = result.data;
+                    $.each(data, function (index, obj) {
+                        layui.$("#required1").append("<option value='" + obj.did + "'>" + obj.dname + "</option>");
+                    });
+                    form.render();
+                }
+            });
+        }
+        //  监听系部下拉框 根据所选系部查询专业
+        form.on('select(required1)', function (data) {
+            if (data.value == 0) {
+                layui.$('#required2').html("");
+                layui.$('#required3').html("");
+                layui.$('#required4').html("");
+                form.render();
+            }
+
+            //  若系部下拉框值不等于0
+            else {
+                //  移除专业下拉框所有值
+                $("#required2").find("option").remove();
+                $("#required3").find("option").remove();
+                $("#required4").find("option").remove();
+                layui.$.ajax({
+                    type: 'post',
+                    url: "/sas/admin/student/selectdid",
+                    data: {
+                        'did': data.value
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        var data = result.data;
+                        $.each(data, function (index, obj) {
+                            layui.$("#required2").append("<option value='" + obj.mid + "'>" + obj.mname + "</option>");
+                        });
+                        form.render();
+                        //  监听专业
+                        var required2 = $("#required2").val();
+                        $("#required3").find("option").remove();
+                        $("#required4").find("option").remove();
+                        if (required2 != 0) {
+                            layui.$.ajax({
+                                type: 'post',
+                                url: "/sas/admin/student/selectmid",
+                                data: {
+                                    'mid': required2
+                                },
+                                dataType: 'json',
+                                success: function (result) {
+                                    var data = result.data;
+                                    $.each(data, function (index, obj) {
+                                        layui.$("#required3").append("<option value='" + obj.gid + "'>" + obj.gname + "</option>");
+
+                                    });
+                                    form.render();
+                                    //  监听年级
+                                    var required3 = $("#required3").val();
+                                    $("#required4").find("option").remove();
+                                    if (required3 != null) {
+                                        layui.$.ajax({
+                                            type: 'post',
+                                            url: "/sas/admin/student/selectgid",
+                                            data: {
+                                                'gid': required3
+                                            },
+                                            dataType: 'json',
+                                            success: function (result) {
+                                                var aa = $("#required3").find("option:selected").text();
+                                                var year = aa.substring(0, 4);
+                                                var time = year + "-09-01";
+                                                $("#tertime").val(time);
+                                                var data = result.data;
+                                                $.each(data, function (index, obj) {
+                                                    layui.$("#required4").append("<option value='" + obj.classid + "'>" + obj.classname + "</option>");
+                                                });
+                                                form.render();
+
+                                            },
+                                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                                layui.layer.msg(XMLHttpRequest.responseText);
+                                            }
+                                        });
+                                    }
+                                },
+                                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                    layui.layer.msg(XMLHttpRequest.responseText);
+                                }
+                            });
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        layui.layer.msg(XMLHttpRequest.responseText);
+                    }
+                });
+            }
+        });
+
+        //  监听专业下拉框 根据所选系部查询专业
+        form.on('select(required2)', function (data) {
+            //  移除专业下拉框所有值
+            $("#required3").find("option").remove();
+            $("#required4").find("option").remove();
+            //  若系部下拉框值不等于0
+            if (data.value != 0) {
+                layui.$.ajax({
+                    type: 'post',
+                    url: "/sas/admin/student/selectmid",
+                    data: {
+                        'mid': data.value
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        var data = result.data;
+                        $.each(data, function (index, obj) {
+                            layui.$("#required3").append("<option value='" + obj.gid + "'>" + obj.gname + "</option>");
+                        });
+                        form.render();
+                        //  监听年级
+                        var required3 = $("#required3").val();
+                        $("#required4").find("option").remove();
+                        if (required3 != null) {
+                            layui.$.ajax({
+                                type: 'post',
+                                url: "/sas/admin/student/selectgid",
+                                data: {
+                                    'gid': required3
+                                },
+                                dataType: 'json',
+                                success: function (result) {
+                                    var aa = $("#required3").find("option:selected").text();
+                                    var year = aa.substring(0, 4);
+                                    var time = year + "-09-01";
+                                    $("#tertime").val(time);
+                                    var data = result.data;
+                                    $.each(data, function (index, obj) {
+                                        layui.$("#required4").append("<option value='" + obj.classid + "'>" + obj.classname + "</option>");
+                                    });
+                                    form.render();
+                                },
+                                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                    layui.layer.msg(XMLHttpRequest.responseText);
+                                }
+                            });
+                        }
+
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        layui.layer.msg(XMLHttpRequest.responseText);
+                    }
+                });
+            }
+        });
+        //  监听年级下拉框 根据所选年级查询班级
+        form.on('select(required3)', function (data) {
+            //  移除专业下拉框所有值
+            $("#required4").find("option").remove();
+            //  若系部下拉框值不等于0
+            if (data.value != 0) {
+                layui.$.ajax({
+                    type: 'post',
+                    url: "/sas/admin/student/selectgid",
+                    data: {
+                        'gid': data.value
+                    },
+                    dataType: 'json',
+                    success: function (result) {
+                        var aa = $("#required3").find("option:selected").text();
+                        var year = aa.substring(0, 4);
+                        var time = year + "-09-01";
+                        $("#tertime").val(time);
+                        var data = result.data;
+                        $.each(data, function (index, obj) {
+                            layui.$("#required4").append("<option value='" + obj.classid + "'>" + obj.classname + "</option>");
+                        });
+                        form.render();
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        layui.layer.msg(XMLHttpRequest.responseText);
+                    }
+                });
+            }
+        });
+        //  表单验证
+        form.verify({
+            sname: function (value) {
+                if ($.trim(value).length < 2) {
+                    return '请按正确格式输入';
+                }
+            },
+            stuid:[
+                /^[0-9]*$/,
+                '请按正确格式填写信息'
+            ],
+            snation: [
+                /^[\s\S]*.*[^\s][\s\S]*$/
+                , '请按正确格式填写信息'
+            ], saddress: [
+                /^[\s\S]*.*[^\s][\s\S]*$/
+                , '请按正确格式填写信息'
+            ]
+            , scardid: [
+                /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/
+                , '请按正确格式填写信息'
+            ]
+            , sphone: [
+                /^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$/
+                , '请按正确格式填写信息'
+            ],
+
+        });
+        /*条件查询按钮*/
+        //  根据学生姓名查询
+        var $ = layui.$;
+        $('#selBtn').on('click', function () {
+            //获取输入框
+            var did = $('#required1');
+            var mid = $('#required2');
+            var gid = $('#required3');
+            var classid = $('#required4');
+            var stuid = $('#demoReload');
+            var sname = $('#demoReload1');
+            //执行重载
+            table.reload('selStudent', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+                , where: {
+                    did: did.val(),
+                    mid: mid.val(),
+                    gid: gid.val(),
+                    classid: classid.val(),
+                    stuid: stuid.val(),
+                    sname: sname.val()
+                }
+            });
+        });
+        form.on('submit(form)', function (data) {
+            layer.confirm("确认添加?", ['确认', '取消'], function () {
+                $.ajax({
+                    url: "/sas/admin/student/add",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify(data.field),
+                    success: function (data) {
+                        if (!data.succeed) {
+                            layer.msg("添加失败,已有学生学号")
+                        } else {
+                            var index = parent.layer.getFrameIndex(window.name);//获取窗口索引
+                            layer.msg("添加成功", {time: 200}, function () {
+                                parent.layer.close(index);
+                                location.reload();
+                            });//关闭弹窗，父页面刷新
+                        }
+                    },
+                    error: function (msg) {
+                        console.log(msg)
+                    }
+                });
+            });
+
+            return false;
+        });
+
+    })
+</script>
+</html>

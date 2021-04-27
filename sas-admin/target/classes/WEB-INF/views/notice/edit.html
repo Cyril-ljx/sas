@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>公告修改 - 酒店管理系统</title>
+    <!--: include("/import.html"){} -->
+</head>
+<body>
+<div class="layui-container">
+    <div class="layui-row layui-col-space5">
+        <div class="grid-demo">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+                <legend>公告信息</legend>
+            </fieldset>
+            <form class="layui-form layui-form-pane" action="" lay-filter="form">
+                <input type="hidden" name="id">
+                <input type="hidden" name="isShow">
+                <input type="hidden" name="createTime">
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标题</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="title" lay-verify="required" placeholder="请输入" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">公告内容</label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="请输入公告内容" name="content" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="text-align: center">
+                    <button class="layui-btn layui-btn-fluid layui-btn-normal" lay-submit="" lay-filter="form">修改
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    layui.use(['form', 'layer', 'jquery', 'laydate'], function () {
+        var form = layui.form
+            , layer = layui.layer
+            , $ = layui.jquery
+            , laydate = layui.laydate;
+
+        form.on('submit(form)', function (data) {
+            layer.confirm("确认修改?", ['确认', '取消'], function () {
+                $.ajax({
+                    url: "/hms/admin/advisement/update",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: 'json',
+                    data: JSON.stringify(data.field),
+                    success: function (data) {
+                        if (!data.succeed) {
+                            layer.msg("修改失败")
+                        } else {
+                            var index = parent.layer.getFrameIndex(window.name);//获取窗口索引
+                            layer.msg("修改成  功", {time: 200}, function () {
+                                parent.layer.close(index);
+                                location.reload();
+                            });//关闭弹窗，父页面刷新
+                        }
+                    },
+                    error: function (msg) {
+                        console.log(msg)
+                    }
+                });
+            });
+
+            return false;
+        });
+
+        $(document).ready(function () {
+            const id = "${id}";
+            $.ajax({
+                url: "/hms/admin/advisement/detail",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataType: 'json',
+                data: JSON.stringify({
+                    "id": id
+                }),
+                success: function (data) {
+                    if (data.succeed) {
+                        console.log(data)
+                        var item = data.data;
+                        form.val('form', {
+                            "id": item.id,
+                            "title": item.title,
+                            "content": item.content,
+                            "createTime": item.createTime,
+                            "isShow": item.isShow
+                        })
+                        $("textarea").html(item.content)
+                    } else {
+                        layer.alert(data.msg, {"icon": 2});
+                    }
+                },
+                error: function (msg) {
+                    console.log(msg)
+                }
+            });
+        })
+
+    })
+</script>
+</html>

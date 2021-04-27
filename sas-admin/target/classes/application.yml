@@ -1,0 +1,27 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: sas-admin
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 100MB
+  mvc:
+    static-path-pattern: /static/**
+    view:
+      prefix: /WEB-INF/views
+      suffix: .html
+logging:
+  config:  classpath:logback.xml
+  level:
+    com:
+      lingnan:
+        sas:
+          dao:  trace
+# 腾讯云地址
+tencent:
+  path: https://lulu0921-1305401030.cos.ap-guangzhou.myqcloud.com
+  qianzui: img/newsInfo
+
+

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingnan.sas.mapper.DeliverDao">
+
+    <resultMap type="com.lingnan.sas.core.entity.Deliver" id="DeliverMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="company" column="company" jdbcType="VARCHAR"/>
+        <result property="state" column="state" jdbcType="VARCHAR"/>
+        <result property="job" column="job" jdbcType="VARCHAR"/>
+        <result property="passData" column="pass_data" jdbcType="OTHER"/>
+         <result property="time" column="time" jdbcType="OTHER"/>
+        <result property="suid" column="suid" jdbcType="INTEGER"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="DeliverMap">
+        select
+          id, company, state, job, pass_data, suid, remark,time
+        from school_assistant.deliver
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="DeliverMap">
+        select
+          id, company, state, job, pass_data, suid, remark
+        from school_assistant.deliver
+        limit #{offset}, #{limit}
+    </select>
+
+
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into school_assistant.deliver(company, state, job, pass_data, suid, remark,time)
+        values (#{company}, #{state}, #{job}, #{passData}, #{suid}, #{remark},#{time})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update school_assistant.deliver
+        <set>
+            <if test="company != null and company != ''">
+                company = #{company},
+            </if>
+            <if test="state != null and state != ''">
+                state = #{state},
+            </if>
+            <if test="job != null and job != ''">
+                job = #{job},
+            </if>
+            <if test="passData != null">
+                pass_data = #{passData},
+            </if>
+            <if test="suid != null">
+                suid = #{suid},
+            </if>
+            <if test="time != null">
+                time = #{time},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from school_assistant.deliver where id = #{id}
+    </delete>
+
+    <select id="queryAllById" resultType="java.util.HashMap">
+   SELECT
+   d.id,
+	d.company,d.state,
+	(CASE WHEN d.state = 0 Then '已投递'
+				WHEN d.state = 1 Then '线下笔试'
+				WHEN d.state = 2 Then '线上笔试'
+				WHEN d.state = 3 Then '一面'
+				WHEN d.state = 4 Then '二面'
+				WHEN d.state = 5 Then '三面'
+				WHEN d.state = 6 Then '综合面'
+				WHEN d.state = 7 Then 'Offer'
+				ELSE '未通过' END) AS process,
+	d.job,
+	d.time,
+	d.pass_data,
+	d.suid,
+	d.remark,
+	s.icon
+FROM
+	deliver d
+	LEFT JOIN sys_user s ON d.suid = s.id
+WHERE
+	d.suid = #{id} and d.state not in (7,8)  order by pass_data desc
+
+	LIMIT #{offset}, #{limit}
+</select>
+<select id="queryAllOverById" resultType="java.util.HashMap">
+     SELECT
+        d.id,d.company,d.state,
+        (CASE WHEN d.state = 0 Then '已投递'
+                    WHEN d.state = 1 Then '线下笔试'
+                    WHEN d.state = 2 Then '线上笔试'
+                    WHEN d.state = 3 Then '一面'
+                    WHEN d.state = 4 Then '二面'
+                    WHEN d.state = 5 Then '三面'
+                    WHEN d.state = 6 Then '综合面'
+                    WHEN d.state = 7 Then 'Offer'
+                    ELSE '未通过' END) AS process,
+        d.job,d.time,
+        d.pass_data,
+        d.suid,
+        d.remark,
+        s.icon
+    FROM
+        deliver d
+        LEFT JOIN sys_user s ON d.suid = s.id
+    WHERE
+        d.suid = #{id} and d.state in (7,8) order by pass_data desc
+
+        LIMIT #{offset}, #{limit}
+</select>
+<select id="selectLastData" resultType="java.lang.String">
+select back_time from diretion order by back_time desc limit 1
+</select>
+<delete id="deleteAll">
+delete  from diretion
+</delete>
+
+</mapper>

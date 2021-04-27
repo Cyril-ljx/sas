@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingnan.sas.mapper.ClassinfoDao">
+
+    <resultMap type="com.lingnan.sas.core.entity.Classinfo" id="ClassinfoMap">
+        <result property="classid" column="classid" jdbcType="INTEGER"/>
+        <result property="classname" column="classname" jdbcType="VARCHAR"/>
+        <result property="begintime" column="begintime" jdbcType="OTHER"/>
+        <result property="endtime" column="endtime" jdbcType="OTHER"/>
+        <result property="ccount" column="ccount" jdbcType="INTEGER"/>
+        <result property="gid" column="gid" jdbcType="INTEGER"/>
+        <result property="isDel" column="is_del" jdbcType="INTEGER"/>
+        <result property="gname" column="gname" jdbcType="VARCHAR"/>
+        <collection property="students" ofType="com.lingnan.sas.core.entity.Student" column="classid">
+        <id property="sid" column="sid" jdbcType="INTEGER"/>
+        <result property="stuid" column="stuid" jdbcType="VARCHAR"/>
+        <result property="sname" column="sname" jdbcType="VARCHAR"/>
+        <result property="sgender" column="sgender" jdbcType="VARCHAR"/>
+        <result property="sbirthday" column="sbirthday" jdbcType="OTHER"/>
+        <result property="pid" column="pid" jdbcType="INTEGER"/>
+        <result property="snation" column="snation" jdbcType="VARCHAR"/>
+        <result property="scardid" column="scardid" jdbcType="VARCHAR"/>
+        <result property="sphone" column="sphone" jdbcType="VARCHAR"/>
+        <result property="saddress" column="saddress" jdbcType="VARCHAR"/>
+        <result property="entertime" column="entertime" jdbcType="VARCHAR"/>
+        <result property="leavetime" column="leavetime" jdbcType="OTHER"/>
+        <result property="stustate" column="stustate" jdbcType="INTEGER"/>
+        <result property="classid" column="classid" jdbcType="INTEGER"/>
+        <result property="isDel" column="is_del" jdbcType="BOOLEAN"/>
+        <result property="pname" column="pname" jdbcType="VARCHAR"/>
+        <result property="classname" column="classname" jdbcType="VARCHAR"/>
+        <result property="gname" column="gname" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ClassinfoMap">
+        select
+          classid, classname, begintime, endtime, ccount, gid, is_del
+        from school_assistant.classinfo
+        where classid = #{classid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultType="SchoolManageVO">
+          select *
+        from classinfo c
+        inner join grade g on c.gid = g.gid
+        inner join major m on g.mid = m.mid
+        inner join department d on m.did = d.did
+        <where>
+                c.is_del=0 and g.is_del=0 and m.is_del=0 and d.is_del=0
+                <if test="classname != null">
+                    and c.classname=#{classname}
+                </if>
+                <if test="gname != null">
+                    and g.gname=#{gname}
+                </if>
+                <if test="mname != null">
+                    and m.mname=#{mname}
+                </if>
+                <if test="dname != null">
+                    and d.dname=#{dname}
+                </if>
+        </where>
+        order by c.classid desc
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ClassinfoMap">
+        select
+          classid, classname, begintime, endtime, ccount, gid, is_del
+        from school_assistant.classinfo
+        <where>
+            <if test="classid != null">
+                and classid = #{classid}
+            </if>
+            <if test="classname != null and classname != ''">
+                and classname = #{classname}
+            </if>
+            <if test="begintime != null">
+                and begintime = #{begintime}
+            </if>
+            <if test="endtime != null">
+                and endtime = #{endtime}
+            </if>
+            <if test="ccount != null">
+                and ccount = #{ccount}
+            </if>
+            <if test="gid != null">
+                and gid = #{gid}
+            </if>
+            <if test="isDel != null">
+                and is_del = #{isDel}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="classid" useGeneratedKeys="true">
+        insert into school_assistant.classinfo(classname, begintime, endtime, ccount, gid, is_del)
+        values (#{classname}, #{begintime}, #{endtime}, #{ccount}, #{gid}, #{isDel})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update school_assistant.classinfo
+        <set>
+            <if test="classname != null and classname != ''">
+                classname = #{classname},
+            </if>
+            <if test="begintime != null">
+                begintime = #{begintime},
+            </if>
+            <if test="endtime != null">
+                endtime = #{endtime},
+            </if>
+            <if test="ccount != null">
+                ccount = #{ccount},
+            </if>
+            <if test="gid != null">
+                gid = #{gid},
+            </if>
+            <if test="isDel != null">
+                is_del = #{isDel},
+            </if>
+        </set>
+        where classid = #{classid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from school_assistant.classinfo where classid = #{classid}
+    </delete>
+
+    <select id="queryClassCount" resultType="java.lang.Integer">
+    select count(*) from classinfo where is_del = 0
+    </select>
+
+    <!--条件查询classname-->
+    <select id="tjSelClass" resultType="SchoolManageVO">
+        select classid,classname from classinfo where is_del=0 group by classname order by classid
+    </select>
+
+    <!--重复验证班别-->
+    <select id="checkOneClass" resultType="Integer">
+        select count(*) from classinfo where classname=#{classname} and gid=#{gid}
+    </select>
+
+      <!--添加班级-->
+    <insert id="addOneClass" keyProperty="classid" useGeneratedKeys="true">
+        insert into classinfo(classname,gid) values(#{classname},#{gid})
+    </insert>
+    <select id="queryClassByPage" resultMap="ClassinfoMap">
+             select * from classinfo
+        where
+        gid=#{gid} and
+        is_del =0
+limit #{offset}, #{limit}
+</select>
+
+</mapper>

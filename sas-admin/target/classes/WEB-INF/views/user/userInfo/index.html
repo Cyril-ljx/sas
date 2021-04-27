@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>客户管理 - 酒店管理系统</title>
+    <!--: include("/import.html"){} -->
+</head>
+<body>
+<blockquote class="layui-elem-quote  layui-quote-nm layui-form">
+    <div class="layui-inline">
+        <div class="layui-input-inline">
+            <input type="text" id="nickname" placeholder="请输入用户姓名" autocomplete="off" class="layui-input">
+        </div>
+        <div class="layui-input-inline">
+            <select id="state">
+                <option value="">状态</option>
+                <option value="0">冻结</option>
+                <option value="1">正常</option>
+            </select>
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-normal" id="search"><i class="layui-icon">&#xe615;</i>搜索</button>
+        </div>
+        <div class="layui-inline">
+            <button class="layui-btn layui-btn-primary" id="rest"><i class="layui-icon">&#xe669;</i>重置</button>
+        </div>
+    </div>
+</blockquote>
+<table class="layui-hide" id="table" lay-filter="table"></table>
+
+<script type="text/html" id="outerBar">
+    <a class="layui-btn layui-btn-sm layui-btn-primary" lay-event="add">添加</a>
+    <a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-sm layui-btn-normal" lay-event="detail">详情</a>
+    <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
+</script>
+</body>
+<script>
+    layui.use(['table', 'jquery'], function () {
+        var table = layui.table;
+        var $ = layui.jquery;
+        /* 表格数据载入 */
+        table.render({
+            elem: '#table',
+            url: '/hms/admin/client/list',
+            toolbar: '#outerBar',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示'
+                , layEvent: 'LAYTABLE_TIPS'
+                , icon: 'layui-icon-tips'
+            }],
+            skin: "row",
+            width: 1120,
+            height: 450,
+            page: true,
+            cols: [
+                [{type: 'radio', fixed: 'left'}, {
+                    field: 'id',
+                    title: 'ID',
+                    width: 160,
+                    sort: true,
+                    fixed: 'left'
+                }, {
+                    field: 'username',
+                    title: '客户账号',
+                    width: 300
+                }, {
+                    field: 'nickname',
+                    title: '客户姓名',
+                    width: 240
+                }, {
+                    field: 'identify',
+                    title: '身份证号码',
+                    width: 240
+                }, {
+                    field: 'phone',
+                    title: '客户电话',
+                    width: 240
+                }, {
+                    field: 'identify',
+                    title: '身份证号码',
+                    width: 240
+                }, {
+                    field: 'createTime',
+                    title: '注册时间',
+                    width: 240
+                }, {
+                    field: 'state',
+                    title: '客户状态',
+                    width: 160,
+                    fixed: 'right',
+                    sort: true,
+                    templet: function (d) {
+                        return d.state === 0 ? "<p style='color: orange'>冻结</p>" : "正常";
+                    }
+                }
+                ]
+            ],
+            id: 'Reload' //表格重载的id
+        });
+
+        $("#rest").click(function () {
+            $("#state").val("");
+            $("#nickname").val("");
+        })
+
+        /* 表格重载 */
+        $('#search').on('click', function () {
+            table.reload('Reload', {
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                },
+                where: {
+                    nickname: $('#nickname').val(),
+                    state: $('#state').val()
+                }
+            });
+        });
+
+        //头工具栏事件
+        table.on('toolbar(table)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var data = checkStatus.data[0];
+            if (obj.event !== 'add' && checkStatus.data.length === 0) {
+                layer.msg("至少选择一条数据进行操作!", {"icon": 3});
+                return;
+            }
+            switch (obj.event) {
+                case 'add':
+                    layer.open({
+                        type: 2,
+                        title: "添加客户",
+                        shadeClose: true,
+                        shade: 0.2,
+                        maxmin: true, //开启最大化最小化按钮
+                        area: ['100%', '100%'],
+                        content: "/hms/admin/page/userInfo/add",
+                        end: function () {
+                            $(".layui-laypage-btn").click();
+                        }
+                    });
+                    break;
+                case 'edit':
+                    layer.open({
+                        type: 2,
+                        title: "修改客户信息",
+                        shadeClose: true,
+                        shade: 0.2,
+                        maxmin: true, //开启最大化最小化按钮
+                        area: ['50%', '75%'],
+                        content: "/hms/admin/page/userInfo/edit?id=" + data.id,
+                        end: function () {
+                            $(".layui-laypage-btn").click();
+                        }
+                    });
+                    break;
+                case 'detail':
+                    layer.open({
+                        type: 2,
+                        title: "客户信息详情",
+                        shadeClose: true,
+                        shade: 0.2,
+                        maxmin: true, //开启最大化最小化按钮
+                        area: ['50%', '75%'],
+                        content: "/hms/admin/page/userInfo/detail?id=" + data.id,
+                        end: function () {
+                            $(".layui-laypage-btn").click();
+                        }
+                    });
+                    break;
+                case 'del':
+                    layer.confirm("确认删除该记录?", ['确认', '取消'], function () {
+                        $.ajax({
+                            url: "/hms/admin/client/del",
+                            type: 'post',
+                            data: JSON.stringify({"id": data.id}),
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                if (data.succeed) {
+                                    layer.msg("删除成功!");
+                                    $(".layui-laypage-btn").click();
+                                } else {
+                                    layer.alert(data.msg);
+                                }
+                            }
+                        });
+                    });
+                    break;
+                //自定义头工具栏右侧图标 - 提示
+                case 'LAYTABLE_TIPS':
+                    layer.msg('这是工具栏右侧自定义的一个图标按钮');
+                    break;
+            }
+        });
+
+    });
+</script>
+</html>

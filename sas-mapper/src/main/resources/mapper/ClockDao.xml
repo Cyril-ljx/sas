@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingnan.sas.mapper.ClockDao">
+
+    <resultMap type="com.lingnan.sas.core.entity.Clock" id="ClockMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="sid" column="sid" jdbcType="INTEGER"/>
+        <result property="sname" column="sname" jdbcType="VARCHAR"/>
+        <result property="temperature" column="temperature" jdbcType="OTHER"/>
+        <result property="city" column="city" jdbcType="VARCHAR"/>
+        <result property="time" column="time" jdbcType="TIMESTAMP"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+         <result property="flag" column="flag" jdbcType="INTEGER"/>
+         <result property="risk" column="risk" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultType="HashMap">
+        select
+          id, sid, sname, temperature, city, time, remark,
+          (CASE WHEN risk = 2 Then '高风险'
+                    WHEN risk = 1 Then '中风险'
+                    ELSE '低风险' END) AS risk
+        from school_assistant.clock
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ClockMap">
+        select
+          c.*,s.sname
+        from clock c left join student s on c.sid = s.sid
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ClockMap">
+        select
+          id, sid, sname, temperature, city, time, remark,risk
+        from school_assistant.clock
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="sid != null">
+                and sid = #{sid}
+            </if>
+            <if test="sname != null and sname != ''">
+                and sname = #{sname}
+            </if>
+            <if test="temperature != null">
+                and temperature = #{temperature}
+            </if>
+            <if test="city != null and city != ''">
+                and city = #{city}
+            </if>
+            <if test="time != null">
+                and time = #{time}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+                <if test="risk != null and risk != ''">
+                and risk = #{risk}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into school_assistant.clock(sid, sname, temperature, city, time, remark,risk)
+        values (#{sid}, #{sname}, #{temperature}, #{city}, #{time}, #{remark}, #{risk})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update school_assistant.clock
+        <set>
+            <if test="sid != null">
+                sid = #{sid},
+            </if>
+            <if test="sname != null and sname != ''">
+                sname = #{sname},
+            </if>
+            <if test="temperature != null">
+                temperature = #{temperature},
+            </if>
+            <if test="city != null and city != ''">
+                city = #{city},
+            </if>
+            <if test="time != null">
+                time = #{time},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from school_assistant.clock where id = #{id}
+    </delete>
+    <select id="queryClockCount" resultType="java.lang.Integer">
+    select count(*) from clock
+</select>
+<select id="searchMessage" resultType="ClockVO">
+select s.sid as sid ,s.sname as sname ,c2.city,c2.remark ,c2.temperature,c2.time
+from student s left join clock c2 on s.sid = c2.sid
+where s.sid = #{sid}
+order by c2.time desc limit 1
+</select>
+<select id="searchNotClock" resultType="HashMap">
+select s.sid,s.sname,su.icon,c.classname from student s left join sys_user su on s.sid = su.login_name
+left JOIN classinfo c on c.classid = s.classid
+left join grade g on g.gid = c.gid
+LEFT JOIN teacher t on t.gid = g.gid
+where s.sid not in(
+SELECT c.sid FROM clock c WHERE time= DATE_FORMAT(NOW(),'%Y-%m-%d'))
+and c.classid = #{cid}
+group by classname,sname
+limit #{offset}, #{limit}
+</select>
+
+<select id="searchClock" resultType="HashMap">
+select s.sid,s.sname,su.icon,c.classname from student s left join sys_user su on s.sid = su.login_name
+left JOIN classinfo c on c.classid = s.classid
+left join grade g on g.gid = c.gid
+LEFT JOIN teacher t on t.gid = g.gid
+where s.sid in(
+SELECT c.sid FROM clock c WHERE time= DATE_FORMAT(NOW(),'%Y-%m-%d'))
+and c.classid = #{cid}
+group by classname,sname
+limit #{offset}, #{limit}
+</select>
+
+<select id="searchClockNum" resultType="HashMap">
+select count(DISTINCT(sid)) as count,c.classname,c.classid  from student s
+left JOIN classinfo c on c.classid = s.classid
+left join grade g on g.gid = c.gid
+LEFT JOIN teacher t on t.gid = g.gid
+where s.sid in(
+SELECT c.sid FROM clock c WHERE time= DATE_FORMAT(NOW(),'%Y-%m-%d'))
+and t.tid = #{tid}
+group by classname
+limit #{offset}, #{limit}
+</select>
+
+<select id="searchNotClockNum" resultType="HashMap">
+SELECT
+	count(
+	DISTINCT ( sid )) AS count,
+	c.classname,
+	c.classid
+FROM
+	student s
+	LEFT JOIN classinfo c ON c.classid = s.classid
+	LEFT JOIN grade g ON g.gid = c.gid
+	LEFT JOIN teacher t ON t.gid = g.gid
+WHERE
+	s.sid NOT IN (
+	SELECT
+		c.sid
+	FROM
+		clock c
+	WHERE
+	time = DATE_FORMAT( NOW(), '%Y-%m-%d' ))
+	AND t.tid = #{tid}
+
+GROUP BY
+	classname
+	LIMIT #{offset}, #{limit}
+</select>
+
+<select id="searchMessageById" resultType="HashMap">
+SELECT
+	c2.id,
+	s.sid AS sid,
+	s.sname AS sname,
+	c2.city,
+	c2.remark,
+	c2.temperature,
+	c2.time,
+	su.icon,
+	(CASE WHEN c2.risk = 2 Then '高风险'
+                    WHEN c2.risk = 1 Then '中风险'
+                    ELSE '低风险' END) AS risk
+FROM
+	student s
+	LEFT JOIN clock c2 ON s.sid = c2.sid
+	LEFT JOIN sys_user su ON s.sid = su.login_name
+WHERE
+	s.sid = #{sid}
+
+ORDER BY
+	c2.time DESC
+	LIMIT #{page}, #{length}
+</select>
+
+</mapper>

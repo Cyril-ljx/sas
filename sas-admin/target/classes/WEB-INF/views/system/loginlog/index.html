@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录日志管理 - 校园助手管理系统</title>
+    <!--: include("/import.html"){} -->
+</head>
+<body>
+<blockquote class="layui-elem-quote">
+    登录日志管理
+</blockquote>
+<table class="layui-hide" id="table" lay-filter="table"></table>
+
+<script type="text/html" id="outerBar">
+    <a class="layui-btn layui-btn-sm layui-btn-warm" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="clear">清除所有</a>
+</script>
+</body>
+</body>
+<script>
+    layui.use(['table', 'jquery'], function () {
+        var table = layui.table;
+        var $ = layui.jquery;
+        /* 表格数据载入 */
+        table.render({
+            elem: '#table',
+            url: '/sas/admin/log/loginList',
+            toolbar: '#outerBar',
+            defaultToolbar: ['filter', 'exports', 'print', {
+                title: '提示'
+                , layEvent: 'LAYTABLE_TIPS'
+                , icon: 'layui-icon-tips'
+            }],
+            skin: "row",
+            width: 1120,
+            height: 450,
+            page: true,
+            cols: [
+                [{type: 'checkbox', fixed: 'left'}, {
+                    field: 'id',
+                    title: 'ID',
+                    width: 160,
+                    sort: true,
+                    fixed: 'left'
+                }, {
+                    field: 'uid',
+                    title: '登录用户ID',
+                    width: 300,
+                    templet: function (d) {
+                        return d.uid === null ? "没有记录用户" : d.uid;
+                    }
+                }, {
+                    field: 'msg',
+                    title: '日志信息',
+                    width: 240
+                }, {
+                    field: 'succeed',
+                    title: '是否成功',
+                    width: 100,
+                    fixed: 'right',
+                    sort: true
+                }, {
+                    field: 'createTime',
+                    title: '记录时间',
+                    width: 240,
+                    fixed: 'right'
+                }
+                ]
+            ],
+            id: 'Reload' //表格重载的id
+        });
+
+        //头工具栏事件
+        table.on('toolbar(table)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var data = checkStatus.data[0];
+            if (obj.event !== 'clear' && checkStatus.data.length === 0) {
+                layer.msg("至少选择一条数据进行操作!", {"icon": 3});
+                return;
+            }
+            switch (obj.event) {
+                case 'del':
+                    layer.confirm("确认删除该记录?", ['确认', '取消'], function () {
+                        $.ajax({
+                            url: "/sas/admin/log/batchDelete",
+                            type: 'post',
+                            data: data.id + "",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                if (data.succeed) {
+                                    layer.msg("删除成功!");
+                                    $(".layui-laypage-btn").click();
+                                } else {
+                                    layer.alert(data.msg);
+                                }
+                            }
+                        });
+                    });
+                    break;
+                case 'clear':
+                    layer.confirm("确认清除所有记录?", ['确认', '取消'], function () {
+                        $.ajax({
+                            url: "/sas/admin/log/delAll",
+                            type: 'post',
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                if (data.succeed) {
+                                    layer.msg("删除成功!");
+                                    $(".layui-laypage-btn").click();
+                                } else {
+                                    layer.alert(data.msg);
+                                }
+                            }
+                        });
+                    });
+                    break;
+                //自定义头工具栏右侧图标 - 提示
+                case 'LAYTABLE_TIPS':
+                    layer.msg('这是工具栏右侧自定义的一个图标按钮');
+                    break;
+            }
+        });
+
+    });
+</script>
+</html>

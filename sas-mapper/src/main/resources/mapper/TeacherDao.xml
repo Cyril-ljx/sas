@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingnan.sas.mapper.TeacherDao">
+
+    <resultMap type="com.lingnan.sas.core.entity.Teacher" id="TeacherMap">
+        <result property="tid" column="tid" jdbcType="INTEGER"/>
+        <result property="tname" column="tname" jdbcType="VARCHAR"/>
+        <result property="tgender" column="tgender" jdbcType="VARCHAR"/>
+        <result property="tbirthday" column="tbirthday" jdbcType="OTHER"/>
+        <result property="pid" column="pid" jdbcType="INTEGER"/>
+        <result property="gid" column="gid" jdbcType="INTEGER"/>
+        <result property="tnation" column="tnation" jdbcType="VARCHAR"/>
+        <result property="tcardid" column="tcardid" jdbcType="VARCHAR"/>
+        <result property="tphone" column="tphone" jdbcType="VARCHAR"/>
+        <result property="taddress" column="taddress" jdbcType="VARCHAR"/>
+        <result property="entertime" column="entertime" jdbcType="OTHER"/>
+        <result property="leavetime" column="leavetime" jdbcType="OTHER"/>
+        <result property="tchstate" column="tchstate" jdbcType="INTEGER"/>
+        <result property="isDel" column="is_del" jdbcType="TINYINT"/>
+        <result property="pname" column="pname" jdbcType="VARCHAR"/>
+        <result property="gname" column="gname" jdbcType="VARCHAR"/>
+        <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="TeacherMap">
+        select
+        t.*,pt.pname,g.gname
+        from teacher t left join politics_type pt on t.pid = pt.pid
+        left join grade g on t.gid = g.gid
+        where tid = #{tid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="TeacherMap">
+        select
+        t.*,pt.pname,g.gname
+        from teacher t left join politics_type pt on t.pid = pt.pid
+        left join grade g on t.gid = g.gid
+         <where>
+            <if test="tname !=null and tname != ''">
+                and t.tname like '%${tname}%'
+            </if>
+            <if test="gid !=null and gid != ''">
+                and t.gid = #{gid}
+            </if>
+               <if test="tid !=null and tid != ''">
+                and t.tid = #{tid}
+            </if>
+            and t.is_del = 0
+        </where>
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="TeacherMap">
+        select
+          tid, tchid, tname, tgender, tbirthday, pid, tnation, tcardid, tphone, taddress, entertime, leavetime, tchstate, is_del
+        from school_assistant.teacher
+        <where>
+            <if test="tid != null">
+                and tid = #{tid}
+            </if>
+            <if test="tname != null and tname != ''">
+                and tname = #{tname}
+            </if>
+            <if test="tgender != null and tgender != ''">
+                and tgender = #{tgender}
+            </if>
+            <if test="tbirthday != null">
+                and tbirthday = #{tbirthday}
+            </if>
+            <if test="pid != null">
+                and pid = #{pid}
+            </if>
+            <if test="tnation != null and tnation != ''">
+                and tnation = #{tnation}
+            </if>
+            <if test="tcardid != null and tcardid != ''">
+                and tcardid = #{tcardid}
+            </if>
+            <if test="tphone != null and tphone != ''">
+                and tphone = #{tphone}
+            </if>
+            <if test="taddress != null and taddress != ''">
+                and taddress = #{taddress}
+            </if>
+            <if test="entertime != null">
+                and entertime = #{entertime}
+            </if>
+            <if test="leavetime != null">
+                and leavetime = #{leavetime}
+            </if>
+            <if test="tchstate != null">
+                and tchstate = #{tchstate}
+            </if>
+            <if test="isDel != null">
+                and is_del = #{isDel}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="tid" useGeneratedKeys="true">
+        insert into school_assistant.teacher(tid,tname, tgender, tbirthday, pid,gid, tnation, tcardid, tphone, taddress, entertime, leavetime, tchstate, is_del,role_id)
+        values (#{tid},#{tname}, #{tgender}, #{tbirthday}, #{pid},#{gid}, #{tnation}, #{tcardid}, #{tphone}, #{taddress}, #{entertime}, #{leavetime}, #{tchstate}, #{isDel},#{roleId})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update school_assistant.teacher
+        <set>
+            <if test="tname != null and tname != ''">
+                tname = #{tname},
+            </if>
+            <if test="tgender != null and tgender != ''">
+                tgender = #{tgender},
+            </if>
+            <if test="tbirthday != null">
+                tbirthday = #{tbirthday},
+            </if>
+            <if test="pid != null">
+                pid = #{pid},
+            </if>
+            <if test="tnation != null and tnation != ''">
+                tnation = #{tnation},
+            </if>
+            <if test="tcardid != null and tcardid != ''">
+                tcardid = #{tcardid},
+            </if>
+            <if test="tphone != null and tphone != ''">
+                tphone = #{tphone},
+            </if>
+            <if test="taddress != null and taddress != ''">
+                taddress = #{taddress},
+            </if>
+            <if test="entertime != null">
+                entertime = #{entertime},
+            </if>
+            <if test="leavetime != null">
+                leavetime = #{leavetime},
+            </if>
+            <if test="tchstate != null">
+                tchstate = #{tchstate},
+            </if>
+            <if test="isDel != null">
+                is_del = #{isDel},
+            </if>
+        </set>
+        where tid = #{tid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        update school_assistant.teacher
+        set is_del = 1
+        where tid = #{tid}
+    </delete>
+    <select id="queryTeacherCount" resultType="java.lang.Integer">
+    select count(*) from teacher t
+    <where>
+            <if test="tname !=null and tname != ''">
+                and t.tname like '%${tname}%'
+            </if>
+            <if test="gid !=null and gid != ''">
+                and t.gid = #{gid}
+            </if>
+               <if test="tid !=null and tid != ''">
+                and t.tid = #{tid}
+            </if>
+            and t.is_del = 0
+        </where>
+</select>
+
+<select id="searchBysId" resultType="java.util.HashMap">
+select t.tid,su.id,s.sname,c.classname from teacher t
+left join sys_user su on su.login_name = t.tid
+left join classinfo c on c.gid = t.gid
+LEFT JOIN student s on c.classid = s.classid
+where sid = #{sid} limit 1
+</select>
+
+</mapper>

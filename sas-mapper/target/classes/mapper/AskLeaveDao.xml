@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingnan.sas.mapper.AskLeaveDao">
+
+    <resultMap type="com.lingnan.sas.core.entity.AskLeave" id="AskLeaveMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="sid" column="sid" jdbcType="INTEGER"/>
+        <result property="state" column="state" jdbcType="INTEGER"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="reason" column="reason" jdbcType="VARCHAR"/>
+        <result property="startTime" column="start_time" jdbcType="OTHER"/>
+        <result property="endTime" column="end_time" jdbcType="OTHER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="AskLeaveMap">
+        select
+          id, sid, state, remark, reason, start_time, end_time
+        from school_assistant.ask_leave
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="AskLeaveMap">
+        select
+          id, sid, state, remark, reason, start_time, end_time
+        from school_assistant.ask_leave
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="AskLeaveMap">
+        select
+          id, sid, state, remark, reason, start_time, end_time
+        from school_assistant.ask_leave
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="sid != null">
+                and sid = #{sid}
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+            <if test="remark != null and remark != ''">
+                and remark = #{remark}
+            </if>
+            <if test="reason != null and reason != ''">
+                and reason = #{reason}
+            </if>
+            <if test="startTime != null">
+                and start_time = #{startTime}
+            </if>
+            <if test="endTime != null">
+                and end_time = #{endTime}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into school_assistant.ask_leave(sid, state, remark, reason, start_time, end_time)
+        values (#{sid}, #{state}, #{remark}, #{reason}, #{startTime}, #{endTime})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update school_assistant.ask_leave
+        <set>
+            <if test="sid != null">
+                sid = #{sid},
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="remark != null and remark != ''">
+                remark = #{remark},
+            </if>
+            <if test="reason != null and reason != ''">
+                reason = #{reason},
+            </if>
+            <if test="startTime != null">
+                start_time = #{startTime},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from school_assistant.ask_leave where id = #{id}
+    </delete>
+    <select id="queryAllOverById" resultType="java.util.HashMap">
+    SELECT
+        al.id,al.state,
+        (CASE WHEN al.state = 0 Then '申请中'
+                    WHEN al.state = 1 Then '已同意'
+                    ELSE '驳回' END) AS process,
+        al.start_time,
+				al.end_time,
+        al.sid,
+        al.remark,
+				al.reason,
+        s.icon
+    FROM
+        ask_leave	al
+        LEFT JOIN sys_user s ON al.sid = s.id
+    WHERE
+        al.sid = #{id} and al.state in (1,2) order by start_time desc
+                LIMIT #{offset}, #{limit}
+</select>
+<select id="queryAllById" resultType="java.util.HashMap">
+   SELECT
+        al.id,al.state,
+        (CASE WHEN al.state = 0 Then '申请中'
+                    WHEN al.state = 1 Then '已同意'
+                    ELSE '驳回' END) AS process,
+        al.start_time,
+				al.end_time,
+        al.sid,
+        al.remark,
+				al.reason,
+        s.icon
+    FROM
+        ask_leave	al
+        LEFT JOIN sys_user s ON al.sid = s.id
+    WHERE
+        al.sid = #{id} and al.state = 0 order by start_time desc
+                LIMIT #{offset}, #{limit}
+</select>
+
+<select id="searchAskLeave" resultType="HashMap">
+select DISTINCT a.id,s.sid,s.sname,su.icon,c.classname,a.start_time,(CASE WHEN a.state = 0 Then '申请中'
+                    WHEN a.state = 1 Then '已同意'
+                    ELSE '驳回' END) AS process from sys_user su left join student s on s.sid = su.login_name
+left JOIN classinfo c on c.classid = s.classid
+left join grade g on g.gid = c.gid
+LEFT JOIN teacher t on t.gid = g.gid
+LEFT JOIN ask_leave a on a.sid = su.id
+where a.state = 0 and t.tid = #{tid} order by a.start_time desc
+limit #{offset}, #{limit}
+</select>
+
+<select id="searchApprove" resultType="HashMap">
+select DISTINCT a.id,s.sid,s.sname,su.icon,c.classname,a.start_time,(CASE WHEN a.state = 0 Then '申请中'
+                    WHEN a.state = 1 Then '已同意'
+                    ELSE '驳回' END) AS process from sys_user su left join student s on s.sid = su.login_name
+left JOIN classinfo c on c.classid = s.classid
+left join grade g on g.gid = c.gid
+LEFT JOIN teacher t on t.gid = g.gid
+LEFT JOIN ask_leave a on a.sid = su.id
+where a.state != 0 and t.tid = #{tid} order by a.start_time desc
+limit #{offset}, #{limit}
+</select>
+
+<select id="queryBysId" resultMap="AskLeaveMap">
+SELECT
+        al.id,al.state,
+        (CASE WHEN al.state = 0 Then '申请中'
+                    WHEN al.state = 1 Then '已同意'
+                    ELSE '驳回' END) AS process,
+        al.start_time,
+				al.end_time,
+        al.sid,
+        al.remark,
+				al.reason,
+        s.icon
+    FROM
+        ask_leave	al
+        LEFT JOIN sys_user s ON al.sid = s.id
+    WHERE
+        al.sid = #{sid} and al.state = 0 order by start_time desc
+        limit 1
+</select>
+
+</mapper>

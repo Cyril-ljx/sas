@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingnan.sas.mapper.NewsinfoDao">
+
+    <resultMap type="com.lingnan.sas.core.entity.Newsinfo" id="NewsinfoMap">
+        <result property="nid" column="nid" jdbcType="INTEGER"/>
+        <result property="ntitle" column="ntitle" jdbcType="VARCHAR"/>
+        <result property="ncontent" column="ncontent" jdbcType="OTHER"/>
+        <result property="nauthor" column="nauthor" jdbcType="VARCHAR"/>
+        <result property="ntime" column="ntime" jdbcType="VARCHAR"/>
+        <result property="nimg" column="nimg" jdbcType="VARCHAR"/>
+        <result property="suid" column="suid" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="NewsinfoMap">
+        select
+          nid, ntitle, ncontent, nauthor, ntime, nimg
+        from school_assistant.newsinfo
+        where nid = #{nid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="NewsinfoMap">
+        select
+          nid, ntitle, ncontent, nauthor, ntime, nimg
+        from school_assistant.newsinfo
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="NewsinfoMap">
+        select
+          nid, ntitle, ncontent, nauthor, ntime, nimg
+        from school_assistant.newsinfo
+        <where>
+            <if test="nid != null">
+                and nid = #{nid}
+            </if>
+            <if test="ntitle != null and ntitle != ''">
+                and ntitle = #{ntitle}
+            </if>
+            <if test="ncontent != null">
+                and ncontent = #{ncontent}
+            </if>
+            <if test="nauthor != null and nauthor != ''">
+                and nauthor = #{nauthor}
+            </if>
+            <if test="ntime != null">
+                and ntime = #{ntime}
+            </if>
+            <if test="nimg != null and nimg != ''">
+                and nimg = #{nimg}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="nid" useGeneratedKeys="true">
+        insert into school_assistant.newsinfo(ntitle, ncontent, nauthor, ntime, nimg)
+        values (#{ntitle}, #{ncontent}, #{nauthor}, #{ntime}, #{nimg})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update school_assistant.newsinfo
+        <set>
+            <if test="ntitle != null and ntitle != ''">
+                ntitle = #{ntitle},
+            </if>
+            <if test="ncontent != null">
+                ncontent = #{ncontent},
+            </if>
+            <if test="nauthor != null and nauthor != ''">
+                nauthor = #{nauthor},
+            </if>
+            <if test="ntime != null">
+                ntime = #{ntime},
+            </if>
+            <if test="nimg != null and nimg != ''">
+                nimg = #{nimg},
+            </if>
+        </set>
+        where nid = #{nid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from school_assistant.newsinfo where nid = #{nid}
+    </delete>
+    <select id="queryStudentCount" resultType="java.lang.Integer">
+    select count(*) from newsinfo
+</select>
+
+<select id="queryNewsByPage" resultMap="NewsinfoMap">
+             select * from newsinfo n order by ntime desc
+limit #{offset}, #{limit}
+</select>
+<select id="queryNewsById" resultMap="NewsinfoMap">
+ select * from newsinfo n where nid = #{id}
+</select>
+
+</mapper>

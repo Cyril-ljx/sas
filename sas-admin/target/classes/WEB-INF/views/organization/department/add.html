@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>院系添加 - 校园助手管理系统</title>
+    <!--: include("/import.html"){} -->
+</head>
+<body>
+<div class="layui-container">
+    <div class="layui-row layui-col-space5">
+        <div class="grid-demo">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 10px;">
+                <legend>院系管理</legend>
+            </fieldset>
+            <form class="layui-form layui-form-pane" action="" lay-filter="form">
+
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label" style="color: red;">请确保名称是全称。</label>
+                    <div class="layui-input-block">
+                        <textarea id="addMajorText" lay-verify="required" placeholder="请输入名称" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item" style="text-align: center">
+                    <button class="layui-btn layui-btn-fluid" lay-submit="" lay-filter="form">添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    layui.use(['form', 'layer', 'jquery', 'laydate'], function () {
+        var $ = layui.$ //重点处
+            , layer = layui.layer
+            , form = layui.form
+            , table = layui.table
+            , layer = layui.layer
+            , laydate = layui.laydate;
+        layer.ready(function () {
+            $("#addMajorText").val("");
+            //获取系部表
+        })
+        form.on('submit(form)', function (data) {
+            var addDname = $("#addMajorText").val();
+            if (addDname.trim() == "") {
+                layer.alert('请输入院系名称！');
+                $("#addMajorText").val("");
+            }else {
+                layer.confirm("确认添加?", ['确认', '取消'], function () {
+                    $.ajax({
+                        url: "/sas/admin/department/add",
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        dataType: 'json',
+                        data: JSON.stringify({
+                            dname: addDname
+                        }),
+                        success: function (data) {
+                            if (!data.succeed) {
+                                layer.msg("添加失败")
+                            } else {
+                                var index = parent.layer.getFrameIndex(window.name);//获取窗口索引
+                                layer.msg("添加成功", {time: 200}, function () {
+                                    parent.layer.close(index);
+                                    location.reload();
+                                });//关闭弹窗，父页面刷新
+                            }
+                        },
+                        error: function (msg) {
+                            console.log(msg)
+                        }
+                    });
+                });
+            }
+            return false;
+        });
+
+    })
+</script>
+</html>

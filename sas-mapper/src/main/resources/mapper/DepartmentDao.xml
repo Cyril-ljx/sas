@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingnan.sas.mapper.DepartmentDao">
+
+    <resultMap type="com.lingnan.sas.core.entity.Department" id="DepartmentMap">
+        <result property="did" column="did" jdbcType="INTEGER"/>
+        <result property="dname" column="dname" jdbcType="VARCHAR"/>
+        <result property="dcount" column="dcount" jdbcType="INTEGER"/>
+        <result property="isDel" column="is_del" jdbcType="INTEGER"/>
+        <collection property="majors" ofType="com.lingnan.sas.core.entity.Major" column="did">
+        <id property="mid" column="mid" jdbcType="INTEGER"/>
+        <result property="mname" column="mname" jdbcType="VARCHAR"/>
+        <result property="mcount" column="mcount" jdbcType="INTEGER"/>
+        <result property="did" column="did" jdbcType="INTEGER"/>
+        <result property="isDel" column="is_del" jdbcType="INTEGER"/>
+        <result property="dname" column="dname" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="DepartmentMap">
+        select
+          did, dname, dcount, is_del
+        from school_assistant.department
+        where did = #{did}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultType="SchoolManageVO">
+        select *
+        from  department d
+        <where>
+            d.is_del=0
+            <if test="dname != null">
+                and d.dname=#{dname}
+            </if>
+        </where>
+        order by d.did desc
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="DepartmentMap">
+        select
+          did, dname, dcount, is_del
+        from school_assistant.department
+        <where>
+            <if test="did != null">
+                and did = #{did}
+            </if>
+            <if test="dname != null and dname != ''">
+                and dname = #{dname}
+            </if>
+            <if test="dcount != null">
+                and dcount = #{dcount}
+            </if>
+            <if test="isDel != null">
+                and is_del = #{isDel}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="did" useGeneratedKeys="true">
+        insert into school_assistant.department(dname, dcount, is_del)
+        values (#{dname}, #{dcount}, #{isDel})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update school_assistant.department
+        <set>
+            <if test="dname != null and dname != ''">
+                dname = #{dname},
+            </if>
+            <if test="dcount != null">
+                dcount = #{dcount},
+            </if>
+            <if test="isDel != null">
+                is_del = #{isDel},
+            </if>
+        </set>
+        where did = #{did}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        update school_assistant.department set is_del=  1 where did = #{did}
+    </delete>
+    <select id="queryDepartmentCount" resultType="java.lang.Integer">
+    select count(*) from department where is_del = 0
+</select>
+    <!--条件查询department-->
+    <select id="tjSelDpm" resultType="SchoolManageVO">
+        select did,dname from department where is_del=0 group by dname order by did
+    </select>
+
+    <!--重复验证院系-->
+    <select id="checkOneDpm" resultType="Integer">
+        select count(*) from department where dname=#{dname}
+    </select>
+
+     <!--添加系部-->
+    <insert id="addOneDpm" keyProperty="did" useGeneratedKeys="true">
+        insert into department(dname) values(#{dname})
+    </insert>
+    <select id="queryDepByPage" resultMap="DepartmentMap">
+      select * from department
+        where is_del =0
+limit #{offset}, #{limit}
+</select>
+
+</mapper>

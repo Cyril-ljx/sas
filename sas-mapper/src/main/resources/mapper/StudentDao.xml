@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lingnan.sas.mapper.StudentDao">
+
+    <resultMap type="com.lingnan.sas.core.entity.Student" id="StudentMap">
+        <result property="sid" column="sid" jdbcType="INTEGER"/>
+        <result property="stuid" column="stuid" jdbcType="VARCHAR"/>
+        <result property="sname" column="sname" jdbcType="VARCHAR"/>
+        <result property="sgender" column="sgender" jdbcType="VARCHAR"/>
+        <result property="sbirthday" column="sbirthday" jdbcType="OTHER"/>
+        <result property="pid" column="pid" jdbcType="INTEGER"/>
+        <result property="snation" column="snation" jdbcType="VARCHAR"/>
+        <result property="scardid" column="scardid" jdbcType="VARCHAR"/>
+        <result property="sphone" column="sphone" jdbcType="VARCHAR"/>
+        <result property="saddress" column="saddress" jdbcType="VARCHAR"/>
+        <result property="entertime" column="entertime" jdbcType="VARCHAR"/>
+        <result property="leavetime" column="leavetime" jdbcType="OTHER"/>
+        <result property="stustate" column="stustate" jdbcType="INTEGER"/>
+        <result property="classid" column="classid" jdbcType="INTEGER"/>
+        <result property="isDel" column="is_del" jdbcType="BOOLEAN"/>
+        <result property="mim" column="mim" jdbcType="VARCHAR"/>
+        <result property="pname" column="pname" jdbcType="VARCHAR"/>
+        <result property="classname" column="classname" jdbcType="VARCHAR"/>
+        <result property="gname" column="gname" jdbcType="VARCHAR"/>
+           <result property="roleId" column="role_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="StudentMap">
+        select
+          s.*,pt.pname,c2.classname,g.gname
+        from student s left join politics_type pt on s.pid = pt.pid
+        left join classinfo c2 on s.classid = c2.classid
+        left join grade g on c2.gid = g.gid
+        where s.sid = #{sid}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="StudentMap">
+        select
+          s.*,pt.pname,c2.classname,g.gname
+        from student s left join politics_type pt on s.pid = pt.pid
+        left join classinfo c2 on s.classid = c2.classid
+        left join grade g on c2.gid = g.gid
+          <where>
+            <if test="sname !=null and sname != ''">
+                and s.sname like '%${sname}%'
+            </if>
+            <if test="classid !=null and classid != ''">
+                and s.classid = #{classid}
+            </if>
+               <if test="sid !=null and sid != ''">
+                and s.sid = #{sid}
+            </if>
+        </where>
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="StudentMap">
+        select
+          sid, stuid, sname, sgender, sbirthday, pid, snation, scardid, sphone, saddress, entertime, leavetime, stustate, classid, is_del, mim
+        from school_assistant.student
+        <where>
+            <if test="sid != null">
+                and sid = #{sid}
+            </if>
+            <if test="stuid != null and stuid != ''">
+                and stuid = #{stuid}
+            </if>
+            <if test="sname != null and sname != ''">
+                and sname = #{sname}
+            </if>
+            <if test="sgender != null and sgender != ''">
+                and sgender = #{sgender}
+            </if>
+            <if test="sbirthday != null">
+                and sbirthday = #{sbirthday}
+            </if>
+            <if test="pid != null">
+                and pid = #{pid}
+            </if>
+            <if test="snation != null and snation != ''">
+                and snation = #{snation}
+            </if>
+            <if test="scardid != null and scardid != ''">
+                and scardid = #{scardid}
+            </if>
+            <if test="sphone != null and sphone != ''">
+                and sphone = #{sphone}
+            </if>
+            <if test="saddress != null and saddress != ''">
+                and saddress = #{saddress}
+            </if>
+            <if test="entertime != null">
+                and entertime = #{entertime}
+            </if>
+            <if test="leavetime != null">
+                and leavetime = #{leavetime}
+            </if>
+            <if test="stustate != null">
+                and stustate = #{stustate}
+            </if>
+            <if test="classid != null">
+                and classid = #{classid}
+            </if>
+            <if test="isDel != null">
+                and is_del = #{isDel}
+            </if>
+            <if test="mim != null and mim != ''">
+                and mim = #{mim}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="sid" useGeneratedKeys="true">
+        insert into school_assistant.student(stuid, sname, sgender, sbirthday, pid, snation, scardid, sphone, saddress, entertime, leavetime, stustate, classid, is_del, mim,role_id)
+        values (#{stuid}, #{sname}, #{sgender}, #{sbirthday}, #{pid}, #{snation}, #{scardid}, #{sphone}, #{saddress}, #{entertime}, #{leavetime}, #{stustate}, #{classid}, #{isDel}, #{mim},#{roleId})
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update school_assistant.student
+        <set>
+            <if test="stuid != null and stuid != ''">
+                stuid = #{stuid},
+            </if>
+            <if test="sname != null and sname != ''">
+                sname = #{sname},
+            </if>
+            <if test="sgender != null and sgender != ''">
+                sgender = #{sgender},
+            </if>
+            <if test="sbirthday != null">
+                sbirthday = #{sbirthday},
+            </if>
+            <if test="pid != null">
+                pid = #{pid},
+            </if>
+            <if test="snation != null and snation != ''">
+                snation = #{snation},
+            </if>
+            <if test="scardid != null and scardid != ''">
+                scardid = #{scardid},
+            </if>
+            <if test="sphone != null and sphone != ''">
+                sphone = #{sphone},
+            </if>
+            <if test="saddress != null and saddress != ''">
+                saddress = #{saddress},
+            </if>
+            <if test="entertime != null">
+                entertime = #{entertime},
+            </if>
+            <if test="leavetime != null">
+                leavetime = #{leavetime},
+            </if>
+            <if test="stustate != null">
+                stustate = #{stustate},
+            </if>
+            <if test="classid != null">
+                classid = #{classid},
+            </if>
+            <if test="isDel != null">
+                is_del = #{isDel},
+            </if>
+            <if test="mim != null and mim != ''">
+                mim = #{mim},
+            </if>
+        </set>
+        where sid = #{sid}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        update  school_assistant.student set is_del=1 where sid = #{sid}
+    </delete>
+
+    <select id="queryStudentCount" resultType="java.lang.Integer">
+    select count(*) from student s
+        <where>
+            <if test="sname !=null and sname != ''">
+                and s.sname like '%${sname}%'
+            </if>
+               <if test="sid !=null and sid != ''">
+                and s.sid like '%${sid}%'
+            </if>
+            <if test="classid !=null">
+                and s.classid = #{classid}
+            </if>
+            and is_del=0
+        </where>
+    </select>
+
+   <!-- 查询系部 -->
+    <select id="selDepartment" resultType="Department">
+      select * from department
+    </select>
+
+    <!-- 根据系部查询专业 -->
+    <select id="selMajor" resultType="Major">
+        select * from major where did = #{did}
+    </select>
+    <!-- 根据专业查询年级 -->
+    <select id="selGrade" resultType="Grade">
+        select * from grade where mid = #{mid}
+    </select>
+    <!-- 根据年级查询班级 -->
+    <select id="selClassinfo" resultType="Classinfo">
+        select * from classinfo where gid = #{gid}
+    </select>
+
+    <select id="finfById" resultType="integer">
+    select count(*) from student where stuid = #{stuid}
+</select>
+
+<!-- 班级表人数+1 -->
+    <update id="selecteClassinfo" parameterType="int">
+      update classinfo set ccount=ccount+1 where classid = #{classid}
+    </update>
+
+    <!-- 年级人数+1 -->
+    <update id="selecteGrade" parameterType="int">
+      update grade set gcount=gcount+1 where gid = #{gid}
+    </update>
+
+    <!-- 专业人数+1 -->
+    <update id="selecteMajor" parameterType="int">
+      update major set mcount=mcount+1 where mid = #{mid}
+    </update>
+
+    <!-- 系部人数+1 -->
+    <update id="selecteDepartment" parameterType="int">
+      update department set dcount=dcount+1 where did = #{did}
+    </update>
+
+    <select id="queryStuByPage" resultMap="StudentMap">
+           select * from student
+        where
+        classid=#{cid} and
+        is_del =0
+limit #{offset}, #{limit}
+</select>
+</mapper>
